@@ -1,40 +1,21 @@
-html,
-body,
-.root {
+html, body, .root {
   height: 100%;
 }
-
 body {
   line-height: 1.5;
 }
-
-body,
-.app {
+body, .app {
   background: white;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-family: 'Libre Baskerville', serif;
-}
-
-a {
-  text-decoration: none;
-}
-
-
-/* Main page */
+/* main page */
 
 .list-books-title {
   padding: 10px 0;
-  background: linear-gradient(to right, #FFFF00, #FF5733);
+  background: #ff0000;
   text-align: center;
+  font-family: 'Gaegu', cursive;
 }
-
 .list-books-title h1 {
   font-weight: 400;
   margin: 0;
@@ -58,10 +39,11 @@ a {
 
 .bookshelf-title {
   border-bottom: 1px solid #dedede;
+  font-family: 'Gaegu', cursive;
 }
-
 .bookshelf-books {
   text-align: center;
+  font-family: 'Gaegu', cursive;
 }
 
 .open-search {
@@ -69,23 +51,21 @@ a {
   right: 25px;
   bottom: 25px;
 }
-
 .open-search a {
   display: block;
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background: #FF5733;
+  background: #ff0000;
   background-image: url('./icons/add.svg');
   background-repeat: no-repeat;
   background-position: center;
   background-size: 28px;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
   font-size: 0;
 }
 
-
-/* Search page */
+/* search page */
 
 .search-books-bar {
   position: fixed;
@@ -94,14 +74,12 @@ a {
   left: 0;
   z-index: 5;
   display: flex;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 0 6px rgba(0, 0, 0, 0.23);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 0 6px rgba(0,0,0,0.23);
 }
-
 .search-books-input-wrapper {
   flex: 1;
   background: #e9e;
 }
-
 .search-books-bar input {
   width: 100%;
   padding: 15px 10px;
@@ -128,26 +106,17 @@ a {
   padding: 80px 10px 20px;
 }
 
-.search-empty {
-  top: 50%;
-  position: absolute;
-  color: lightgray;
-  font-size: xx-large;
-  margin: auto;
-}
-
-
-/* Books grid */
+/* books grid */
 
 .books-grid {
   list-style-type: none;
   padding: 0;
   margin: 0;
+
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
 }
-
 .books-grid li {
   padding: 10px 15px;
   text-align: left;
@@ -155,19 +124,17 @@ a {
 
 .book {
   width: 140px;
+  font-family: 'Gaegu', cursive;
 }
-
 .book-title,
 .book-authors {
   font-size: 0.8em;
 }
-
 .book-title {
   margin-top: 10px;
 }
-
 .book-authors {
-  color: #808080;
+  color: #999;
 }
 
 .book-top {
@@ -184,14 +151,13 @@ a {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: #FF5733;
+  background: #ff0000;
   background-image: url('./icons/arrow-drop-down.svg');
   background-repeat: no-repeat;
   background-position: center;
   background-size: 20px;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
 }
-
 .book-shelf-changer select {
   width: 100%;
   height: 100%;
@@ -199,99 +165,14 @@ a {
   cursor: pointer;
 }
 
-
-/* Book cover */
+/* book cover */
 
 .book-cover {
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
   background: #eee;
 }
-
 .book-cover-title {
   padding: 20px 10px 0;
   text-align: center;
   font-size: 0.8em;
-}
-
-
-/* Book info */
-
-.close-book {
-  display: block;
-  position: absolute;
-  top: 5px;
-  left: 15px;
-  width: 50px;
-  height: 53px;
-  background: black;
-  background-image: url('./icons/arrow-back.svg');
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: 28px;
-  font-size: 0;
-}
-
-.book-container {
-  display: flex;
-  flex-wrap: wrap;
-  width: 250px;
-  justify-content: center;
-  margin: auto;
-  text-align: center;
-  flex-direction: column;
-  align-items: center;
-}
-
-.book-content {
-  display: flex;
-  flex-wrap: wrap;
-  margin: auto;
-  width: 30%;
-  min-width: 300px;
-}
-
-.book-content p {
-  font-size: small;
-}
-
-
-/* Loading spinner*/
-
-.spinner {
-  position: absolute;
-  margin: auto;
-  top: 50%;
-  left: 50%;
-  width: 70px;
-  text-align: center;
-}
-
-.spinner>div {
-  width: 18px;
-  height: 18px;
-  background-color: #333;
-  border-radius: 100%;
-  display: inline-block;
-  animation: sk-bouncedelay 1.4s infinite ease-in-out both;
-}
-
-.spinner .bounce1 {
-  animation-delay: -0.32s;
-}
-
-.spinner .bounce2 {
-  animation-delay: -0.16s;
-}
-
-@keyframes sk-bouncedelay {
-  0%,
-  80%,
-  100% {
-    -webkit-transform: scale(0);
-    transform: scale(0);
-  }
-  40% {
-    -webkit-transform: scale(1.0);
-    transform: scale(1.0);
-  }
 }

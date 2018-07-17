@@ -1,234 +1,171 @@
 import React from 'react'
 import {
-    Route,
-    Link
+  Route
 } from 'react-router-dom'
+
+// APIs
 import * as BooksAPI from './BooksAPI'
+
+// Styling
 import './App.css'
-import BookShelf from './BookShelf';
-import SearchBooks from './SearchBooks'
-import BookInfo from './BookInfo'
-import debounce from 'lodash.debounce'
+
+// UI
+import BookList from './BookList'
+import BookSearch from './BookSearch'
+
 
 class BooksApp extends React.Component {
 
-    state = {
-        books: [], // library
+  state = {
+    books: [],
+    booksSearchResults: []
+  }
 
-        results: [], // search results
-        book: {}
+  // Get books from API
+  componentDidMount() {
+    BooksAPI.getAll().then((books) => {
+      this.setState({
+        books
+      })
+    })
+  }
+
+
+  // Search API 
+  // Each book returned needs to get the book shelf value
+  // For each book shelf value add the object  to the searchQuery
+  getSearchResults = (searchQuery) => {
+
+    //When the search is cleared update the state of the searchResults
+    if (searchQuery === '') {
+
+      this.setState(() => {
+        return {
+          booksSearchResults: []
+        }
+      })
+
     }
 
-    componentDidMount() {
-        // get all the books in the library 
-        BooksAPI.getAll().then(books => {
-            this.setState({
-                books
-            });
+    // Search not Empty
+    else {
+
+      // Search the API
+      BooksAPI.search(searchQuery)
+
+        // Books search results
+        .then(booksSearchResults => {
+          return booksSearchResults
+        })
+
+        // Process the Search Results
+        .then(booksSearchResults => {
+
+          let responsePositive = true
+
+          // Check if the response is not empty
+          let resultsExist = booksSearchResults != null ? true : false
+          if (!resultsExist) {
+            responsePositive = false
+            console.log("Results were undefined")
+          }
+
+          // If response was not empty check if response is VALID
+          if (responsePositive) {
+            let isValid = Object.entries(booksSearchResults)[0][0] === 'error' ? false : true
+            if (!isValid) {
+              responsePositive = false
+              console.log("Invalid Search Paramters")
+            }
+          }
+
+          // If response was not undefined or invalid  the process can  continue 
+          // Each book elaborated in the parameters        
+          if (responsePositive) {
+
+            // In Result SetGet Book IDs for each book 
+            let resultSet = booksSearchResults.map(b => b.id)
+            let bookRequests = []
+
+            // Fetch each book as per the ID and then add to new BookRequests Object
+            resultSet.forEach(function (b) {
+              bookRequests.push(BooksAPI.get(b))
+            })
+
+
+
+
+            return Promise.all(bookRequests)
+              .then(newResultSet => {
+                ///Return the new ResultSet Object
+                return newResultSet
+              })
+          }
+
+          // console.log('books results empty')
+          else {
+
+            return booksSearchResults = []
+          }
+
+        })
+
+        // Once completed we then set the state to update the UI
+        .then(booksSearchResults => {
+
+          this.setState(state => ({
+            booksSearchResults
+          }))
         })
     }
 
-    updateBook = (book, shelf) => {
-        // Check if the book  is already in my library
-        let found = this.state.books.find(el => el.id === book.id);
+  } // End getSearchResults
 
-        // if it isn't add it to the library and update the shelf 
-        if (!found) {
-            this.setState((prevState) => {
-                book.shelf = shelf;
-                return {
-                    books: prevState.books.concat(book)
-                }
-            })
-        } else {
-            // change his shelf if it's alredy in the library  
-            this.setState((state) => ({
-                books: state.books.map((b) => {
-                    if (b.id === book.id) b.shelf = shelf;
-                    return b;
-                })
-            }))
-        }
 
-        // Update the book shelf 
-        BooksAPI.update(book, shelf);
-    }
 
-    // debounce the search function to avoid fetch requests on every keystroke
-    handleSearch = debounce(query => this.searchBooks(query), 500);
+  // Update a Book and Change its shelf (DB and UI)
+  onBookShelfChange = (bookChanged, newShelf) => {
 
-    searchBooks = (query) => {
-        query = query.trim();
+    // Update the Database via the API
+    // Update the Books [] by fetching it again i.e. updates the state    
+    BooksAPI.update(bookChanged, newShelf)
 
-        // clear the results and return if query is empty 
-        if (query === '') {
-            this.resetResults();
-            return;
-        }
+      .then(() => {
+        BooksAPI.getAll().then((books) => {
+          this.setState({
+            books
+          })
+        })
+      }) // End .then Arrow Function
+  }
 
-        // search
-        BooksAPI.search(query)
-            .then(results => {
-                let searchResults;
-                if (!results.error) {
-                    // compare the search results and update the shelves 
-                    searchResults = results.map((b) => {
-                        let found = this.state.books.find(el => el.id === b.id);
-                        if (found) b.shelf = found.shelf;
-                        return b;
-                    })
-                }
 
-                results.error ? this.resetResults() : this.setState({
-                    results: searchResults
-                })
-            })
-            .catch(error => {
-                console.log(error);
-            })
-    }
 
-    resetResults = () => {
+  render() {
 
-        this.setState({
-            book: {},
-            results: []
-        });
-    }
+    return (
 
-    getBook = (id) => {
-        BooksAPI.get(id).then(book => this.setState({
-            book
-        }))
-    }
+      <div>
 
-    render() {
-        return ( <
-            div className = "app" >
-            <
-            Route exact path = '/search'
-            render = {
-                () => ( <
-                    SearchBooks onSearch = {
-                        this.handleSearch
-                    }
-                    onUpdate = {
-                        this.updateBook
-                    }
-                    onReset = {
-                        this.resetResults
-                    }
-                    results = {
-                        this.state.results
-                    }
-                    />
-                )
-            }
-            />
-
-            <
-            Route exact path = '/'
-            render = {
-                () => (
-
-                    <
-                    Header >
-                    <
-                    div className = "list-books-content" >
-                    <
-                    div >
-                    <
-                    BookShelf books = {
-                        this.state.books
-                    }
-                    title = "Currently Reading"
-                    shelf = "currentlyReading"
-                    onUpdate = {
-                        this.updateBook
-                    }
-                    /> <
-                    BookShelf books = {
-                        this.state.books
-                    }
-                    title = "Want to Read"
-                    shelf = "wantToRead"
-                    onUpdate = {
-                        this.updateBook
-                    }
-                    /> <
-                    BookShelf books = {
-                        this.state.books
-                    }
-                    title = "Read"
-                    shelf = "read"
-                    onUpdate = {
-                        this.updateBook
-                    }
-                    /> < /
-                    div > <
-                    /div> <
-                    div className = "open-search" >
-                    <
-                    Link to = "/search" >
-                    Add a book <
-                    /Link> < /
-                    div >
-
-                    <
-                    /Header>
-                )
-            }
-            />
-
-            <
-            Route path = '/book/:id'
-            render = {
-                (props) => ( <
-                    Header back = "true" >
-                    <
-                    BookInfo { ...props
-                    }
-                    onLoad = {
-                        this.getBook
-                    }
-                    book = {
-                        this.state.book
-                    }
-                    onUpdate = {
-                        this.updateBook
-                    }
-                    onReset = {
-                        this.resetResults
-                    }
-                    /> < /
-                    Header >
-                )
-            }
-            /> < /
-            div >
+        <Route exact path='/' render={() => (
+          <BookList books={this.state.books}
+            onBookShelfChange={this.onBookShelfChange}
+          />
         )
-    }
+        }
+        />
+
+        <Route path='/search' render={(history) => (<
+          BookSearch booksSearchResults={this.state.booksSearchResults}
+          onBookShelfChange={this.onBookShelfChange}
+          getSearchResults={this.getSearchResults}
+        />)
+        } />
+
+      </div>
+    )
+  }
 }
 
-function Header(props) {
-    return ( <
-            div className = "list-books" >
-            <
-            div className = "list-books-title" >
-            <
-            h1 > MyReads < /h1> {
-            props.back ?
-            <
-            Link to = "/"
-            className = "close-book" >
-            Close <
-            /Link>: null
-        } <
-        /div> {
-    props.children
-} <
-/div>
-)
-}
 
 export default BooksApp
