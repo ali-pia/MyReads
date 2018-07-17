@@ -1,4 +1,4 @@
-# MyReads: A Book Tracking App - 7° FEND Project Udacity
+# MyReads: A Book Tracking App - 7° FEND Udacity Project 
 In this project it was requested to run a bookshelf app that allows you to select and categorize books you have read, are currently reading, or want to read.
 The application was created with React, an API server and a client library.
 
